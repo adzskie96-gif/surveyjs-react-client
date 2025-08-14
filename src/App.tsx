@@ -6,6 +6,8 @@ import store from './redux';
 import './App.css';
 import logo from './logo.svg';
 
+// store.dispatch(load());
+
 function App() {
   return (
     <Provider store={store}>

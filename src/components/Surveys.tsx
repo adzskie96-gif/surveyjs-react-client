@@ -8,16 +8,17 @@ const Surveys = (): React.ReactElement => {
     const surveys = useReduxSelector(state => state.surveys.surveys)
     const dispatch = useReduxDispatch()
 
-    const postStatus = useReduxSelector(state => state.surveys.status)
+    const status = useReduxSelector(state => state.surveys.status)
 
     useEffect(() => {
-      if (postStatus === 'idle') {
+      if (status === 'idle' && surveys.length === 0) {
         dispatch(load())
       }
-    }, [postStatus, dispatch])    
+    }, [status, dispatch, surveys])
 
     return (<>
         <table className='sjs-surveys-list'>
+            <tbody>
             {surveys.map(survey => 
                 <tr key={survey.id} className='sjs-surveys-list__row'>
                     <td><span>{survey.name}</span></td>
@@ -29,6 +30,7 @@ const Surveys = (): React.ReactElement => {
                     </td>
                 </tr>
             )}
+            </tbody>
         </table>
         <div className='sjs-surveys-list__footer'>
             <span className='sjs-button sjs-add-btn' title='increment' onClick={() => dispatch(create())}>Add Survey</span>                        

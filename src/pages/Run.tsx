@@ -1,26 +1,39 @@
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
-import { useReduxDispatch, useReduxSelector } from '../redux'
+import { useReduxDispatch } from '../redux'
 import { post } from '../redux/results'
+import { get } from '../redux/surveys'
 import { Model } from 'survey-core'
 import { Survey } from 'survey-react-ui'
 import 'survey-core/survey-core.css'
 
 const Run = () => {
-    const { id } = useParams();
     const dispatch = useReduxDispatch()
-    const surveys = useReduxSelector(state => state.surveys.surveys)
-    const survey = surveys.filter(s => s.id === id)[0]
-    const model = new Model(survey.json)
+    const { id } = useParams();
+    const [surveyData, surveyDataSet] = useState<any>(null)
+    const [surveyModel, surveyModelSet] = useState<Model>()
 
-    model
-        .onComplete
-        .add((sender: Model) => {
-            dispatch(post({postId: id as string, surveyResult: sender.data, surveyResultText: JSON.stringify(sender.data)}))
-        });    
+    useEffect(() => {
+        (async () => {
+            const surveyAction = await dispatch(get(id as string))
+            surveyDataSet(surveyAction.payload)
+            const model = new Model(surveyAction.payload?.json);
+            model
+                .onComplete
+                .add((sender: Model) => {
+                    dispatch(post({postId: id as string, surveyResult: sender.data, surveyResultText: JSON.stringify(sender.data)}))
+                });    
+            surveyModelSet(model)
+        })()
+    }, [dispatch, id])
 
     return (<>
-        <h1>{survey.name}</h1>
-        <Survey model={model}/>
+        {surveyData === null && <div>Loading...</div>}
+        {surveyData === undefined && <div>Survey not found</div>}
+        {!!surveyData && <>
+            <h1>{surveyData.name}</h1>
+            <Survey model={surveyModel}/>
+        </>}
     </>);
 }
 

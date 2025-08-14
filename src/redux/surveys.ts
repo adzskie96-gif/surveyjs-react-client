@@ -33,9 +33,11 @@ const surveysSlice = createSlice({
             state.status = 'loading'
           })
           .addCase(load.fulfilled, (state, action) => {
-            state.status = 'succeeded'
-            // Add any fetched surveys to the array
-            state.surveys = state.surveys.concat(action.payload)
+            if(state.status === 'loading') {
+              state.status = 'succeeded'
+              // Add any fetched surveys to the array
+              state.surveys = state.surveys.concat(action.payload)
+            }
           })
           .addCase(load.rejected, (state, action) => {
             state.status = 'failed'

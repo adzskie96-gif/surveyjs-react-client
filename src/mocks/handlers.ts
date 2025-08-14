@@ -1,62 +1,49 @@
-import { rest } from 'msw'
+import { http, HttpResponse } from 'msw'
 import { createSurvey, getResults, getSurvey, getSurveys, postResult, removeSurvey, updateSurvey } from '../models/in-memory-storage'
 import { apiBaseAddress } from '../models/survey'
 
 export const handlers = [
-    rest.get(apiBaseAddress + '/surveys', (req, res, ctx) => {
+    http.get(apiBaseAddress + '/surveys', () => {
         // const { userId } = req.params
-        // return res(
-        //   ctx.json({
+        // return HttpResponse.json({
         //     id: userId,
         //     firstName: 'John',
         //     lastName: 'Maverick',
-        //   }),
-        // )
-        return res(
-            ctx.json(getSurveys()),
-        )
+        //   })
+        return HttpResponse.json(getSurveys())
     }),
-    rest.get(apiBaseAddress + '/getActive', (req, res, ctx) => {
-        return res(
-            ctx.json(getSurveys()),
-        )
+    http.get(apiBaseAddress + '/getActive', () => {
+        return HttpResponse.json(getSurveys())
     }),
-    rest.get(apiBaseAddress + '/create', (req, res, ctx) => {
-        return res(
-            ctx.json(createSurvey()),
-        )
+    http.get(apiBaseAddress + '/create', () => {
+        return HttpResponse.json(createSurvey())
     }),
-    rest.get(apiBaseAddress + '/delete', (req, res, ctx) => {
-        const id = req.url.searchParams.get('id')
+    http.get(apiBaseAddress + '/delete', ({ request }) => {
+        const url = new URL(request.url)
+        const id = url.searchParams.get('id')
         removeSurvey(id as string);
-        return res(
-            ctx.json({ id }),
-        )
+        return HttpResponse.json({ id })
     }),
-    rest.get(apiBaseAddress + '/getSurvey', (req, res, ctx) => {
-        const surveyId = req.url.searchParams.get('surveyId')
-        return res(
-            ctx.json(getSurvey(surveyId as string)),
-        )
+    http.get(apiBaseAddress + '/getSurvey', ({ request }) => {
+        const url = new URL(request.url)
+        const surveyId = url.searchParams.get('surveyId')
+        return HttpResponse.json(getSurvey(surveyId as string))
     }),
-    rest.post(apiBaseAddress + '/changeJson', (req, res, ctx) => {
-        const { id, json } = req.body as Record<string, any>
+    http.post(apiBaseAddress + '/changeJson', async ({ request }) => {
+        const postData = await request.clone().json()
+        const { id, json } = postData as Record<string, any>
         updateSurvey(id as string, json)
-        return res(
-            ctx.json({ id, json }),
-        )
+        return HttpResponse.json({ id, json })
     }),
-    rest.post(apiBaseAddress + '/post', (req, res, ctx) => {
-        const { postId, surveyResult } = req.body as Record<string, any>
+    http.post(apiBaseAddress + '/post', async ({ request }) => {
+        const postData = await request.clone().json()
+        const { postId, surveyResult } = postData as Record<string, any>
         postResult(postId as string, surveyResult)
-        return res(
-            ctx.json({}),
-        )
+        return HttpResponse.json({})
     }),
-    rest.get(apiBaseAddress + '/results', (req, res, ctx) => {
-        const postId = req.url.searchParams.get('postId')
-        return res(
-            ctx.json({ id: postId, data: getResults(postId as string) }),
-        )
+    http.get(apiBaseAddress + '/results', ({ request }) => {
+        const url = new URL(request.url)
+        const postId = url.searchParams.get('postId')
+        return HttpResponse.json({ id: postId, data: getResults(postId as string) })
     })
 ]

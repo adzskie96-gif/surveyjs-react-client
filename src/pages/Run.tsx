@@ -30,8 +30,10 @@ const Run = () => {
     return (<>
         {surveyData === null && <div>Loading...</div>}
         {surveyData === undefined && <div>Survey not found</div>}
-        {!!surveyData && <>
+        {!!surveyData && !!surveyModel && !surveyModel.title && <>
             <h1>{surveyData.name}</h1>
+        </>}
+        {!!surveyModel && <>
             <Survey model={surveyModel}/>
         </>}
     </>);

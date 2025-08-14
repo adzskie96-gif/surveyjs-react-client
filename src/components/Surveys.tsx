@@ -21,7 +21,7 @@ const Surveys = (): React.ReactElement => {
             <tbody>
             {surveys.map(survey => 
                 <tr key={survey.id} className='sjs-surveys-list__row'>
-                    <td><span>{survey.name}</span></td>
+                    <td><span>{survey.json?.title || survey.name}</span></td>
                     <td>
                         <Link className='sjs-button' to={'run/' + survey.id}><span>Run</span></Link>
                         <Link className='sjs-button' to={'edit/' + survey.id}><span>Edit</span></Link>

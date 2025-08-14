@@ -56,8 +56,7 @@
   },
   "msw": {
     "workerDirectory": [
-      "public",
-      "згидшс"
+      "public"
     ]
   },
   "devDependencies": {

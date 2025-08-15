@@ -127,3 +127,7 @@ h1 {
   text-align: center;
   border: 1px dotted lightgray;
 }
+
+.sa-commercial {
+  box-sizing: border-box;
+}
